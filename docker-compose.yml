@@ -1,0 +1,67 @@
+version: "3.9"
+
+networks:
+  routings:
+
+services: 
+  frontend:
+    build: .
+    ports:
+      - "3000:3000"
+    container_name: react
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      database:
+        condition: service_healthy
+    command: npm start
+    networks:
+      - routings
+    stdin_open: true
+    tty: true
+
+  backend:
+    build: .
+    ports:
+      - "8080:8080"
+    container_name: server
+    volumes:
+      - ./backend:/app
+    depends_on:
+      database:
+        condition: service_healthy
+    command: node server.js
+    networks:
+      - routings
+    stdin_open: true
+    tty: true
+
+  database:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+    ports:
+      - "3306:3306"
+    container_name: db
+    networks:
+      - routings
+    healthcheck:
+      test: "/usr/bin/mysql -h localhost --password=admin --execute \"SHOW DATABASES;\""
+      interval: 2s
+      timeout: 20s
+      retries: 10
+    stdin_open: true
+    tty: true
+
+  
+
+    
+
+
+
+
+
+
+
+              
+  

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>server request tests</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script type="text/javascript">
+    </script>
+
+</head>
+<body>
+    <div class="message-box">
+        <h2>Server Messages</h2>
+        <textarea readonly id="server-message" rows="20" cols="200"></textarea> <br>
+        <h2>Old Posts</h2>
+        <textarea readonly id="other-posts" rows="20" cols="200"></textarea> <br> <br>
+    </div>
+    <div class="container">
+        <button id="initButton" style="position: relative;">Initialize</button> 
+        <input type="text" placeholder="Enter a topic..." id="sendTopic">
+        <input type="text" placeholder="Enter a message to send..." id="sendMessage">
+        <button id="sendPost">Send Message</button>
+    </div>
+
+    <script type="text/javascript">
+        function retrieveOldPosts(){
+            $.get('/sendToClient', function(data) {
+                $('#other-posts').val("");
+                data.forEach(element => {
+                    $('#other-posts').val($('#other-posts').val() + "\n" + 
+                        "Topic: " + element.topic + " " + "Data: " + element.data
+                    );
+                });
+            });
+        }
+        $("#sendPost").click(retrieveOldPosts);
+
+        function sendPostToDB(){
+            $.ajax({
+                type: "POST",
+                url: "/sendToDB",
+                data: "postTopic=" + document.getElementById("sendTopic").value + "&postMsg=" + document.getElementById("sendMessage").value,
+                contentType: 'application/x-www-form-urlencoded',
+                success: function(data){
+                    $('#server-message').val($('#server-message').val() + "\n" + data.resp);
+                },
+                error: function(){
+                    $('#server-message').val($('#server-message').val() + "\n" + "Message wasnt posted. Try again.");
+
+                }
+            });
+            document.getElementById("other-posts").value = "";
+            document.getElementById("sendTopic").value = "";
+            document.getElementById("sendMessage").value = "";
+        }  
+        $("#sendPost").click(sendPostToDB);
+            
+        function initializeDatabase(){
+            var url = '/init';
+            var params = "";
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: function(data){
+                    $('#server-message').val($('#server-message').val() + "\n" + data.resp);
+                    document.getElementById("other-posts").value = "";
+                    document.getElementById("sendTopic").value = "";
+                    document.getElementById("sendMessage").value = "";
+                }
+            })
+        }
+        $('#initButton').click(initializeDatabase);
+    </script>
+
+</body>
+</html>
