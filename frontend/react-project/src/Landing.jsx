@@ -1,8 +1,8 @@
 import React, {useState} from "react";
 
 function Landing(){
-    const [UserName, SetUserName] = useState("");
-    const [Password, SetPassword] = useState("");
+    // const [UserName, SetUserName] = useState("");
+    // const [Password, SetPassword] = useState("");
 
 
     function checkButton(){
@@ -11,23 +11,9 @@ function Landing(){
 
     return(
         <div className="Landing-page">
-            <h1> Stack Overflow: Kind Of </h1> <br/> <br/>
-            <div className="sign-in-block">
-                <div className="sign-in-form">
-                    <input
-                        type="text"
-                        placeholder="Username"
-                        value={UserName}
-                        onChange={(data) => {SetUserName(data.target.value)}}
-                    /> <br/> <br/>
-                    <input 
-                        type="text"
-                        placeholder="Password"
-                        value={Password}
-                        onChange={(data) => {SetPassword(data.target.value)}}
-                    /> <br/> <br/>
-                    <button onClick={checkButton}> Submit </button>
-                </div>
+            <h1>My Stack Overflow: </h1> <br/> <br/>
+            <div className="Opening-message">
+                <h2> Welcome to </h2>
             </div>
         </div>
     )
