@@ -10,7 +10,7 @@ services:
       - "3000:3000"
     container_name: react
     volumes:
-      - ./frontend/react-project:/app
+      - ./frontend:/app
     depends_on:
       database:
         condition: service_healthy
@@ -52,16 +52,3 @@ services:
       retries: 10
     stdin_open: true
     tty: true
-
-  
-
-    
-
-
-
-
-
-
-
-              
-  
