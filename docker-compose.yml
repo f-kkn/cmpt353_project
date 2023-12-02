@@ -14,7 +14,7 @@ services:
     depends_on:
       database:
         condition: service_healthy
-    command: npm start
+    command: bash -c " npm install && npm start"
     networks:
       - routings
     stdin_open: true

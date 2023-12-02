@@ -1,20 +1,16 @@
-import React, {useState} from "react";
+import React from "react";
+import { useState } from "react";
 
-function Login(){
+function Signup(){
     const [UserName, SetUserName] = useState("");
     const [Password, SetPassword] = useState("");
 
-
-    function checkButton(){
-        console.log(`${UserName} and ${Password}`);
-    }
-
     return(
-        <div className="Login-page">
+        <div className="Signup-page">
             <h1> Stack Overflow: Kind Of </h1> <br/> <br/>
-            <div className="sign-in-block">
-                <h3>Log in Below!</h3>
-                <div className="sign-in-form">
+            <div className="sign-up-block">
+                <h3>Sign up Below!</h3>
+                <div className="sign-up-form">
                     <input
                         type="text"
                         placeholder="Username"
@@ -27,10 +23,11 @@ function Login(){
                         value={Password}
                         onChange={(data) => {SetPassword(data.target.value)}}
                     /> <br/> <br/>
-                    <button onClick={checkButton}> Log In </button>
+                    <button> Sign Up </button>
                 </div>
             </div>
         </div>
-    )
+    );
 }
-export default Login;
+
+export default Signup;
