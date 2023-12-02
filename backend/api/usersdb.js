@@ -6,18 +6,32 @@ exports.checkUser = (conn, userName, table, callback) => {
         }
         if(res.length == 0){
             callback(null, false);
-        }
-        else{
+        } else{
             callback(null, true);
         }
     });
 };
 
 exports.createUser = (conn, userName, passWord, table) => {
-   let usr = `INSERT IGNORE INTO ${table}(userName, passWord) VALUES('${userName}', '${passWord}')`;
+   let usr = `INSERT INTO ${table}(userName, passWord) VALUES('${userName}', '${passWord}')`;
     conn.query(usr, (err) => {
         if(err){
-            throw `There was an error creating ${userName}`
+            throw `There was an error creating ${userName}`;
+        }
+        console.log(`User ${userName} added into table ${table}`);
+    });
+}
+
+exports.authUser = (conn, userName, passWord, callback) => {
+    let findUsr = `SELECT * FROM users WHERE username=('${userName}') AND password=('${passWord}')`;
+    conn.query(findUsr, (err, res) => {
+        if (err){
+            throw `There was an error retrieving ${userName}`;
+        }
+        if(res.length == 0){
+            callback(null, false);
+        } else{
+            callback(null, true);
         }
     });
 }

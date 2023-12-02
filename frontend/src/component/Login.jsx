@@ -1,12 +1,29 @@
 import React, {useState} from "react";
 
 function Login(){
-    const [UserName, SetUserName] = useState("");
+    const url = 'http://ip172-18-0-7-cllph9ksnmng00bhkrt0-8080.direct.labs.play-with-docker.com';
+    const [Username, SetUserName] = useState("");
     const [Password, SetPassword] = useState("");
+    const [Response, SetResponse] = useState("");
 
 
-    function checkButton(){
-        console.log(`${UserName} and ${Password}`);
+    function authenticateUser(){
+        fetch(`${url}/authUser`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                "username": Username,
+                "password": Password
+            })
+        })
+        .then((res) => res.json())
+        .then((res) => {
+           if(res === "exist"){
+                SetResponse("This user exist on db");
+           } else{
+                SetResponse("This user does not exist on db"); 
+           }
+        });
     }
 
     return(
@@ -18,7 +35,7 @@ function Login(){
                     <input
                         type="text"
                         placeholder="Username"
-                        value={UserName}
+                        value={Username}
                         onChange={(data) => {SetUserName(data.target.value)}}
                     /> <br/> <br/>
                     <input 
@@ -27,8 +44,10 @@ function Login(){
                         value={Password}
                         onChange={(data) => {SetPassword(data.target.value)}}
                     /> <br/> <br/>
-                    <button onClick={checkButton}> Log In </button>
-                </div>
+                    <button onClick={authenticateUser}> Log In </button>
+                </div> <br/>
+                
+                <h5> {Response} </h5>
             </div>
         </div>
     )

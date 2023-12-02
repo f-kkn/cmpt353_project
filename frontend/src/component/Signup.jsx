@@ -1,21 +1,29 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
+import { Navigate } from "react-router-dom";
 
 function Signup(){
-    const [UserName, SetUserName] = useState("");
+    const url = 'http://ip172-18-0-7-cllph9ksnmng00bhkrt0-8080.direct.labs.play-with-docker.com';
+    const [UserName, SetUsername] = useState("");
     const [Password, SetPassword] = useState("");
-
+    const [Response, SetResponse] = useState("");
+    
     function sendUsrCredits(){
-        fetch('http://ip172-18-0-5-cllbnb0gftqg008g6qhg-8080.direct.labs.play-with-docker.com/addUser', {
+        fetch(`${url}/addUser`, {
             method: "POST", 
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
                 "username": UserName,
                 "password": Password
             })
-        }).then((data) => {
-            alert(JSON.stringify(data));
         })
+        .then((res) => res.json())
+        .then((res) => {
+            if(res != "Success"){
+                SetUsername("");
+                SetPassword("");
+            }
+            SetResponse(res);
+        });
     }
 
     return(
@@ -28,7 +36,7 @@ function Signup(){
                         type="text"
                         placeholder="Username"
                         value={UserName}
-                        onChange={(data) => {SetUserName(data.target.value)}}
+                        onChange={(data) => {SetUsername(data.target.value)}}
                     /> <br/> <br/>
                     <input 
                         type="text"
@@ -37,7 +45,10 @@ function Signup(){
                         onChange={(data) => {SetPassword(data.target.value)}}
                     /> <br/> <br/>
                     <button onClick={sendUsrCredits}> Sign Up </button>
-                </div>
+                </div> <br/>
+                
+                <h5> {Response} </h5>
+                {Response === "Success" && <Navigate to="/Login" />}
             </div>
         </div>
     );

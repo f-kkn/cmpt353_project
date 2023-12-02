@@ -63,76 +63,29 @@ console.log(`Database initialization complete!`);
 
 /* --------------------- EXPRESS ---------------------*/
 app.post('/addUser', (req, res) => {
-    // let checkUsr = `SELECT COUNT(*) as count FROM ${userTable} WHERE userName = '${req.body.username}'`;
-    console.log('asdasdasd');
+    console.log('Adding user to database....');
     userdb.checkUser(conn, req.body.username, userTable, (err, exist) => {
         if(err || exist){
-            res.status(400).send("");
+            console.log(`User ${req.body.username} already exists.`);
+            res.status(200).send(JSON.stringify("Fail"));
         } else{
             userdb.createUser(conn, req.body.username, req.body.password, userTable);
-            res.status(200).send("success");
+            res.status(200).send(JSON.stringify("Success"));
         }
     });
-    // let addUsr = `INSERT IGNORE INTO ${userTable}(userName, passWord) VALUES('${req.body.username}', '${req.body.password}')`;
-    // let checkUsr = `SELECT * FROM ${userTable} WHERE username = '${req.body.username}'`;
-    // conn.query(checkUsr, (err, result) => {
-    //     if(err){
-    //         throw `There was an error retrieving ${req.body.username}`;
-    //     }
-    //     if(result.length == 0){
-
-    //     }
-    // });
-    // conn.query(addUsr, (err, result) => {
-    //     if(err){
-    //         throw `server cannot add a user to ${userTable}.`;
-    //     } 
-    //     if(result.affectedRows > 0){
-    //         res.send(`User added successfully`);
-    //     } else{
-    //         res.send(`User ${req.body.username} already taken`);
-    //     }
-    // });
 });
 
-
-// app.get('/init', (req, res) => {
-//     var queryCreateDatabase = `CREATE DATABASE IF NOT EXISTS ${dbName}`;
-//     connection.query(queryCreateDatabase, (err) => {
-//         // if(err) res.status(400).send("Server cannot create a database.");
-//         if(err) console.log(err);
-
-//         console.log(`[SERVER] : database \'${dbName}\' created.`);
-//     });
-
-//     let getDatabase = `USE ${dbName}`;
-//     let checkTable = `DROP TABLE IF EXISTS ${tableName}`;
-//     let addTable = `CREATE TABLE IF NOT EXISTS ${tableName} (
-//         id          int unsigned NOT NULL auto_increment,
-//         topic       varchar(100) NOT NULL,
-//         data        varchar(100) NOT NULL,
-//         PRIMARY KEY (id))`;
-    // connection.query(getDatabase, (err) => { //select the database first
-    //     // if(err) res.status(400).send("Server cannot get the database.");
-    //     if(err) console.log(err);
-
-    //     console.log(`[SERVER] : Working with ${dbName} database.`);
-    //     connection.query(checkTable, (err) => { //then, check if the table exists. Delete if it does.
-    //         // if(err){throw err;}
-    //         if(err) console.log(err);
-
-    //         console.log(`[SERVER] : Deleting contents of ${tableName}.`);
-    //     });
-    //     connection.query(addTable, (err) => { //Create the table
-    //         // if(err) res.status(400).send("Server cannot add the table to database.");
-    //         if(err) console.log(err);
-
-    //         console.log(`[SERVER] : Creating table ${tableName}.`);
-    //     });
-    // });
-//     res.json({resp: "complete"}); 
-// });
-
+app.post('/authUser', (req, res) => {
+    console.log('Authenticating user from database....');
+    userdb.authUser(conn, req.body.username, req.body.password, (err, authenticate) => {
+        if(err || !authenticate){
+            console.log(`User ${req.body.username} does not exist.`);
+            res.status(200).send(JSON.stringify("!exist"));
+        } else{
+            res.status(200).send(JSON.stringify("exist"));
+        }
+    });
+});
 // app.post('/sendToDB', (req, res) => {
 //     let insertPostQuery = `INSERT INTO ${tableName}(topic,data) VALUES('${req.body.postTopic}','${req.body.postMsg}')`;
 //     connection.query(insertPostQuery, (err) => {
