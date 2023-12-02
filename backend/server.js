@@ -1,3 +1,5 @@
+const userdb = require("./api/usersdb");
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2');
@@ -61,14 +63,36 @@ console.log(`Database initialization complete!`);
 
 /* --------------------- EXPRESS ---------------------*/
 app.post('/addUser', (req, res) => {
-    let addUsr = `INSERT INTO ${userTable}(userName, passWord) VALUES('${req.body.username}', '${req.body.password}')`;
-    conn.query(addUsr, (err) => {
-        if(err){
-            throw `server cannot add a user to ${userTable}.`;
+    // let checkUsr = `SELECT COUNT(*) as count FROM ${userTable} WHERE userName = '${req.body.username}'`;
+    console.log('asdasdasd');
+    userdb.checkUser(conn, req.body.username, userTable, (err, exist) => {
+        if(err || exist){
+            res.status(400).send("");
+        } else{
+            userdb.createUser(conn, req.body.username, req.body.password, userTable);
+            res.status(200).send("success");
         }
-        console.log(`user ${req.body.username} has been added to user table`);
-        res.send(`User added successfully`);
     });
+    // let addUsr = `INSERT IGNORE INTO ${userTable}(userName, passWord) VALUES('${req.body.username}', '${req.body.password}')`;
+    // let checkUsr = `SELECT * FROM ${userTable} WHERE username = '${req.body.username}'`;
+    // conn.query(checkUsr, (err, result) => {
+    //     if(err){
+    //         throw `There was an error retrieving ${req.body.username}`;
+    //     }
+    //     if(result.length == 0){
+
+    //     }
+    // });
+    // conn.query(addUsr, (err, result) => {
+    //     if(err){
+    //         throw `server cannot add a user to ${userTable}.`;
+    //     } 
+    //     if(result.affectedRows > 0){
+    //         res.send(`User added successfully`);
+    //     } else{
+    //         res.send(`User ${req.body.username} already taken`);
+    //     }
+    // });
 });
 
 
