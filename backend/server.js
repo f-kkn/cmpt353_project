@@ -16,20 +16,61 @@ app.use('/', express.static(path.join(__dirname, 'public')));
 
 
 //Connection for mysql
-var dbName = "webdb";
-var tableName = "posts";
+var dbName = "projectdb";
+var userTable = "users";
 
-const connection = mysql.createConnection({
+const conn = mysql.createConnection({
     host: "database",
     user: "root",
     password: "admin",
     port: 3306
 });
 
-connection.connect((err) => {
+conn.connect((err) => {
     if (err) throw err;
     console.log("MySQL Connected");
 });
+
+/* --------------------- DATABASE ---------------------*/
+let createDB = `CREATE DATABASE IF NOT EXISTS ${dbName}`;
+let getDatabase = `USE ${dbName}`;
+let addUsrTable = `CREATE TABLE IF NOT EXISTS ${userTable} (
+            id          int unsigned NOT NULL auto_increment,
+            userName       varchar(100) NOT NULL,
+            passWord        varchar(100) NOT NULL,
+            PRIMARY KEY (id))`;
+conn.query(createDB, (err) => {
+    if(err){
+        throw `Server cannot create a database.`;
+    }
+    console.log(`[SERVER] : database \'${dbName}\' created.`);
+});
+conn.query(getDatabase, (err) => {
+    if(err){
+        throw `Server cannot get the database.`;
+    }
+    conn.query(addUsrTable, (err) => {
+        if(err){
+            throw `Server cannot add the table to database.`;
+        }
+        console.log(`[SERVER] : Table ${userTable}. created`);
+    });
+});
+console.log(`Database initialization complete!`);
+
+
+/* --------------------- EXPRESS ---------------------*/
+app.post('/addUser', (req, res) => {
+    let addUsr = `INSERT INTO ${userTable}(userName, passWord) VALUES('${req.body.username}', '${req.body.password}')`;
+    conn.query(addUsr, (err) => {
+        if(err){
+            throw `server cannot add a user to ${userTable}.`;
+        }
+        console.log(`user ${req.body.username} has been added to user table`);
+        res.send(`User added successfully`);
+    });
+});
+
 
 // app.get('/init', (req, res) => {
 //     var queryCreateDatabase = `CREATE DATABASE IF NOT EXISTS ${dbName}`;
@@ -47,24 +88,24 @@ connection.connect((err) => {
 //         topic       varchar(100) NOT NULL,
 //         data        varchar(100) NOT NULL,
 //         PRIMARY KEY (id))`;
-//     connection.query(getDatabase, (err) => { //select the database first
-//         // if(err) res.status(400).send("Server cannot get the database.");
-//         if(err) console.log(err);
+    // connection.query(getDatabase, (err) => { //select the database first
+    //     // if(err) res.status(400).send("Server cannot get the database.");
+    //     if(err) console.log(err);
 
-//         console.log(`[SERVER] : Working with ${dbName} database.`);
-//         connection.query(checkTable, (err) => { //then, check if the table exists. Delete if it does.
-//             // if(err){throw err;}
-//             if(err) console.log(err);
+    //     console.log(`[SERVER] : Working with ${dbName} database.`);
+    //     connection.query(checkTable, (err) => { //then, check if the table exists. Delete if it does.
+    //         // if(err){throw err;}
+    //         if(err) console.log(err);
 
-//             console.log(`[SERVER] : Deleting contents of ${tableName}.`);
-//         });
-//         connection.query(addTable, (err) => { //Create the table
-//             // if(err) res.status(400).send("Server cannot add the table to database.");
-//             if(err) console.log(err);
+    //         console.log(`[SERVER] : Deleting contents of ${tableName}.`);
+    //     });
+    //     connection.query(addTable, (err) => { //Create the table
+    //         // if(err) res.status(400).send("Server cannot add the table to database.");
+    //         if(err) console.log(err);
 
-//             console.log(`[SERVER] : Creating table ${tableName}.`);
-//         });
-//     });
+    //         console.log(`[SERVER] : Creating table ${tableName}.`);
+    //     });
+    // });
 //     res.json({resp: "complete"}); 
 // });
 

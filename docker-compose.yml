@@ -14,7 +14,7 @@ services:
     depends_on:
       database:
         condition: service_healthy
-    command: bash -c " npm install && npm start"
+    command: bash -c " rm -r node_modules && npm install && npm start"
     networks:
       - routings
     stdin_open: true
@@ -52,3 +52,14 @@ services:
       retries: 10
     stdin_open: true
     tty: true
+
+  adminer:
+    image: adminer:latest
+    restart: unless-stopped
+    ports:
+      - 1111:1111
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      ADMINER_DEFAULT_SERVER: database
