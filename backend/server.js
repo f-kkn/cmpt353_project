@@ -40,6 +40,7 @@ let addUsrTable = `CREATE TABLE IF NOT EXISTS ${userTable} (
             id          int unsigned NOT NULL auto_increment,
             userName       varchar(100) NOT NULL,
             passWord        varchar(100) NOT NULL,
+            name        varchar(100) NOT NULL,
             PRIMARY KEY (id))`;
 conn.query(createDB, (err) => {
     if(err){
@@ -62,27 +63,27 @@ console.log(`Database initialization complete!`);
 
 
 /* --------------------- EXPRESS ---------------------*/
-app.post('/addUser', (req, res) => {
+app.post('/usersdb/addUser', (req, res) => {
     console.log('Adding user to database....');
     userdb.checkUser(conn, req.body.username, userTable, (err, exist) => {
         if(err || exist){
             console.log(`User ${req.body.username} already exists.`);
             res.status(200).send(JSON.stringify("Fail"));
         } else{
-            userdb.createUser(conn, req.body.username, req.body.password, userTable);
+            userdb.createUser(conn, req.body.username, req.body.password, req.body.name, userTable);
             res.status(200).send(JSON.stringify("Success"));
         }
     });
 });
 
-app.post('/authUser', (req, res) => {
+app.post('/usersdb/authUser', (req, res) => {
     console.log('Authenticating user from database....');
     userdb.authUser(conn, req.body.username, req.body.password, (err, authenticate) => {
         if(err || !authenticate){
             console.log(`User ${req.body.username} does not exist.`);
-            res.status(200).send(JSON.stringify("!exist"));
+            res.status(200).send(JSON.stringify("0"));
         } else{
-            res.status(200).send(JSON.stringify("exist"));
+            res.status(200).send(JSON.stringify("1"));
         }
     });
 });

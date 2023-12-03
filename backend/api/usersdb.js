@@ -12,8 +12,8 @@ exports.checkUser = (conn, userName, table, callback) => {
     });
 };
 
-exports.createUser = (conn, userName, passWord, table) => {
-   let usr = `INSERT INTO ${table}(userName, passWord) VALUES('${userName}', '${passWord}')`;
+exports.createUser = (conn, userName, passWord, name, table) => {
+   let usr = `INSERT INTO ${table}(userName, passWord, name) VALUES('${userName}', '${passWord}', '${name}')`;
     conn.query(usr, (err) => {
         if(err){
             throw `There was an error creating ${userName}`;

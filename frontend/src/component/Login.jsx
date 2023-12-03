@@ -1,14 +1,15 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
+import { Navigate } from "react-router-dom";
 
 function Login(){
-    const url = 'http://ip172-18-0-7-cllph9ksnmng00bhkrt0-8080.direct.labs.play-with-docker.com';
-    const [Username, SetUserName] = useState("");
+    const url = 'http://ip172-18-0-4-clls9o0gftqg009r9420-8080.direct.labs.play-with-docker.com';
+    const [Username, SetUsername] = useState("");
     const [Password, SetPassword] = useState("");
     const [Response, SetResponse] = useState("");
 
 
     function authenticateUser(){
-        fetch(`${url}/authUser`, {
+        fetch(`${url}/usersdb/authUser`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
@@ -18,9 +19,12 @@ function Login(){
         })
         .then((res) => res.json())
         .then((res) => {
-           if(res === "exist"){
-                SetResponse("This user exist on db");
+           if(res === "1"){
+                //SetResponse("This user exist on db");
+                SetResponse("good");
            } else{
+                SetUsername("");
+                SetPassword("");
                 SetResponse("This user does not exist on db"); 
            }
         });
@@ -36,7 +40,7 @@ function Login(){
                         type="text"
                         placeholder="Username"
                         value={Username}
-                        onChange={(data) => {SetUserName(data.target.value)}}
+                        onChange={(data) => {SetUsername(data.target.value)}}
                     /> <br/> <br/>
                     <input 
                         type="text"
@@ -48,6 +52,7 @@ function Login(){
                 </div> <br/>
                 
                 <h5> {Response} </h5>
+                {Response === "good" && <Navigate to="/Main" />}
             </div>
         </div>
     )

@@ -2,25 +2,28 @@ import React, { useState } from "react";
 import { Navigate } from "react-router-dom";
 
 function Signup(){
-    const url = 'http://ip172-18-0-7-cllph9ksnmng00bhkrt0-8080.direct.labs.play-with-docker.com';
-    const [UserName, SetUsername] = useState("");
+    const url = 'http://ip172-18-0-4-clls9o0gftqg009r9420-8080.direct.labs.play-with-docker.com';
+    const [Username, SetUsername] = useState("");
     const [Password, SetPassword] = useState("");
+    const [Name, SetName] = useState("");
     const [Response, SetResponse] = useState("");
     
     function sendUsrCredits(){
-        fetch(`${url}/addUser`, {
+        fetch(`${url}/usersdb/addUser`, {
             method: "POST", 
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
-                "username": UserName,
-                "password": Password
+                "username": Username,
+                "password": Password,
+                "name": Name
             })
         })
         .then((res) => res.json())
         .then((res) => {
-            if(res != "Success"){
+            if(res !== "Success"){
                 SetUsername("");
                 SetPassword("");
+                SetName("");
             }
             SetResponse(res);
         });
@@ -35,7 +38,7 @@ function Signup(){
                     <input
                         type="text"
                         placeholder="Username"
-                        value={UserName}
+                        value={Username}
                         onChange={(data) => {SetUsername(data.target.value)}}
                     /> <br/> <br/>
                     <input 
@@ -44,9 +47,15 @@ function Signup(){
                         value={Password}
                         onChange={(data) => {SetPassword(data.target.value)}}
                     /> <br/> <br/>
+                    <input 
+                        type="text"
+                        placeholder="Name"
+                        value={Name}
+                        onChange={(data) => {SetName(data.target.value)}}
+                    /> <br/> <br/>
                     <button onClick={sendUsrCredits}> Sign Up </button>
                 </div> <br/>
-                
+
                 <h5> {Response} </h5>
                 {Response === "Success" && <Navigate to="/Login" />}
             </div>
