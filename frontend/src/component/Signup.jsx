@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Navigate } from "react-router-dom";
 
+import MACROS from "./macros";
+
 function Signup(){
-    const url = 'http://ip172-18-0-4-clls9o0gftqg009r9420-8080.direct.labs.play-with-docker.com';
+    const url = MACROS.URL;
     const [Username, SetUsername] = useState("");
     const [Password, SetPassword] = useState("");
     const [Name, SetName] = useState("");
