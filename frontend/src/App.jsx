@@ -1,10 +1,10 @@
 import './App.css';
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 
-import Landing from "/component/Landing";
-import Login from "/component/Login";
-import Signup from '/component/Signup';
-import Main from '/commponent/Main';
+import Landing from "./component/Landing";
+import Login from "./component/Login";
+import Signup from "./component/Signup";
+import Main from "./component/Main";
 
 function App() {
   return (
