@@ -53,13 +53,13 @@ services:
     stdin_open: true
     tty: true
 
-  adminer:
-    image: adminer:latest
-    restart: unless-stopped
-    ports:
-      - 1111:1111
-    depends_on:
-      database:
-        condition: service_healthy
-    environment:
-      ADMINER_DEFAULT_SERVER: database
+  # adminer:
+  #   image: adminer:latest
+  #   restart: unless-stopped
+  #   ports:
+  #     - 1111:1111
+  #   depends_on:
+  #     database:
+  #       condition: service_healthy
+  #   environment:
+  #     ADMINER_DEFAULT_SERVER: database

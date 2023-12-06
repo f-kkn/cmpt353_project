@@ -1,4 +1,5 @@
 const userdb = require("./api/usersdb");
+const channeldb = require("./api/channeldb");
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -20,6 +21,7 @@ app.use('/', express.static(path.join(__dirname, 'public')));
 //Connection for mysql
 var dbName = "projectdb";
 var userTable = "users";
+var channelTable = "channels";
 
 const conn = mysql.createConnection({
     host: "database",
@@ -37,11 +39,18 @@ conn.connect((err) => {
 let createDB = `CREATE DATABASE IF NOT EXISTS ${dbName}`;
 let getDatabase = `USE ${dbName}`;
 let addUsrTable = `CREATE TABLE IF NOT EXISTS ${userTable} (
-            id          int unsigned NOT NULL auto_increment,
-            userName       varchar(100) NOT NULL,
-            passWord        varchar(100) NOT NULL,
-            name        varchar(100) NOT NULL,
+            id int unsigned NOT NULL auto_increment,
+            userName varchar(100) NOT NULL,
+            passWord varchar(100) NOT NULL,
+            name varchar(100) NOT NULL,
             PRIMARY KEY (id))`;
+            
+let addChannelTable = `CREATE TABLE IF NOT EXISTS ${channelTable} (
+            id int unsigned NOT NULL auto_increment,
+            channelName varchar(100) NOT NULL,
+            FOREIGN KEY (id) REFERENCES users(id),
+            PRIMARY KEY (id))`;
+            
 conn.query(createDB, (err) => {
     if(err){
         throw `Server cannot create a database.`;
@@ -54,9 +63,15 @@ conn.query(getDatabase, (err) => {
     }
     conn.query(addUsrTable, (err) => {
         if(err){
-            throw `Server cannot add the table to database.`;
+            throw `Server cannot add ${userTable} table to database.`;
         }
         console.log(`[SERVER] : Table ${userTable}. created`);
+    });
+    conn.query(addChannelTable, (err) => {
+        if(err){
+            throw `Server cannot add ${channelTable} table to database.`;
+        }
+        console.log(`[SERVER] : Table ${channelTable}. created`);
     });
 });
 console.log(`Database initialization complete!`);
@@ -87,6 +102,13 @@ app.post('/usersdb/authUser', (req, res) => {
         }
     });
 });
+
+app.post('/channeldb/create', (req, res) => {
+    console.log("Creating channel...");
+    channeldb.create(conn, req.body.channelname, channelTable);
+    res.status(200).send(JSON.stringify("channel created."));
+});
+
 // app.post('/sendToDB', (req, res) => {
 //     let insertPostQuery = `INSERT INTO ${tableName}(topic,data) VALUES('${req.body.postTopic}','${req.body.postMsg}')`;
 //     connection.query(insertPostQuery, (err) => {
