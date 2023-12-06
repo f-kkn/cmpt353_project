@@ -1,1 +1,1 @@
-exports.URL = ''; //URL HERE
+exports.URL = 'http://localhost:8080'; //URL HERE

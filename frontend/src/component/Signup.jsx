@@ -14,6 +14,7 @@ function Signup(){
         fetch(`${url}/usersdb/addUser`, {
             method: "POST", 
             headers: {"Content-Type": "application/json"},
+            credentials: "include",
             body: JSON.stringify({
                 "username": Username,
                 "password": Password,

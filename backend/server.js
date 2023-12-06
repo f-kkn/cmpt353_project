@@ -6,22 +6,27 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const path = require('path');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 //connections for express
 const port = 8080;
 const host = '0.0.0.0';
 const app = express();
 
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+    origin: true,
+    credentials: true
+}));
 app.use('/', express.static(path.join(__dirname, 'public')));
 
 
 //Connection for mysql
-var dbName = "projectdb";
-var userTable = "users";
-var channelTable = "channels";
+const dbName = "projectdb";
+const userTable = "users";
+const channelTable = "channels";
 
 const conn = mysql.createConnection({
     host: "database",
@@ -39,17 +44,18 @@ conn.connect((err) => {
 let createDB = `CREATE DATABASE IF NOT EXISTS ${dbName}`;
 let getDatabase = `USE ${dbName}`;
 let addUsrTable = `CREATE TABLE IF NOT EXISTS ${userTable} (
-            id int unsigned NOT NULL auto_increment,
+            user_id int unsigned NOT NULL auto_increment,
             userName varchar(100) NOT NULL,
             passWord varchar(100) NOT NULL,
             name varchar(100) NOT NULL,
-            PRIMARY KEY (id))`;
+            PRIMARY KEY (user_id))`;
             
 let addChannelTable = `CREATE TABLE IF NOT EXISTS ${channelTable} (
-            id int unsigned NOT NULL auto_increment,
+            channel_id int unsigned NOT NULL auto_increment,
             channelName varchar(100) NOT NULL,
-            FOREIGN KEY (id) REFERENCES users(id),
-            PRIMARY KEY (id))`;
+            user_id int unsigned,
+            PRIMARY KEY (channel_id),
+            FOREIGN KEY (user_id) REFERENCES users (user_id))`;
             
 conn.query(createDB, (err) => {
     if(err){
@@ -59,17 +65,17 @@ conn.query(createDB, (err) => {
 });
 conn.query(getDatabase, (err) => {
     if(err){
-        throw `Server cannot get the database.`;
+        throw `${err.message}`;
     }
     conn.query(addUsrTable, (err) => {
         if(err){
-            throw `Server cannot add ${userTable} table to database.`;
+            throw `${err.message}`;
         }
         console.log(`[SERVER] : Table ${userTable}. created`);
     });
     conn.query(addChannelTable, (err) => {
         if(err){
-            throw `Server cannot add ${channelTable} table to database.`;
+            throw `${err.message}`;
         }
         console.log(`[SERVER] : Table ${channelTable}. created`);
     });
@@ -93,11 +99,12 @@ app.post('/usersdb/addUser', (req, res) => {
 
 app.post('/usersdb/authUser', (req, res) => {
     console.log('Authenticating user from database....');
-    userdb.authUser(conn, req.body.username, req.body.password, (err, authenticate) => {
+    userdb.authUser(conn, req.body.username, req.body.password, (err, authenticate, result) => {
         if(err || !authenticate){
             console.log(`User ${req.body.username} does not exist.`);
             res.status(200).send(JSON.stringify("0"));
         } else{
+            res.cookie("user", result[0], {secure: true, path: "/"});
             res.status(200).send(JSON.stringify("1"));
         }
     });
@@ -105,32 +112,9 @@ app.post('/usersdb/authUser', (req, res) => {
 
 app.post('/channeldb/create', (req, res) => {
     console.log("Creating channel...");
-    channeldb.create(conn, req.body.channelname, channelTable);
+    channeldb.create(conn, req.body.channelname, req.body.uid, channelTable);
     res.status(200).send(JSON.stringify("channel created."));
 });
-
-// app.post('/sendToDB', (req, res) => {
-//     let insertPostQuery = `INSERT INTO ${tableName}(topic,data) VALUES('${req.body.postTopic}','${req.body.postMsg}')`;
-//     connection.query(insertPostQuery, (err) => {
-//         if(err) res.status(400).send('Failed to insert post');
-//         else{
-//             res.json({resp: "Post successful"});
-//             console.log("[SERVER] : Post successfully saved to database.");
-//         }
-//     });
-// });
-
-// app.get('/sendToClient', (req, res) => {
-//     let useTable = `SELECT * FROM posts`;
-//     connection.query(useTable, (err, rows) => {
-//         if(err) res.status(400).send('Failed to send posts to client');
-//         else{
-//             console.log(`Sending ${rows}`);
-//             res.send(JSON.parse(JSON.stringify(rows)));
-//             console.log("[SERVER] : All posts sent to client.");
-//         }
-//     })
-// });
 
 app.listen(port, host);
 console.log(`HOST ${host} listening on PORT ${port}`);

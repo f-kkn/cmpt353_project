@@ -14,6 +14,7 @@ function Login(){
         fetch(`${url}/usersdb/authUser`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
+            credentials: "include",
             body: JSON.stringify({
                 "username": Username,
                 "password": Password

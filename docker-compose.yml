@@ -30,7 +30,7 @@ services:
     depends_on:
       database:
         condition: service_healthy
-    command: node server.js
+    command: bash -c "npm install && npm start"
     networks:
       - routings
     stdin_open: true

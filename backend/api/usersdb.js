@@ -31,7 +31,7 @@ exports.authUser = (conn, userName, passWord, callback) => {
         if(res.length == 0){
             callback(null, false);
         } else{
-            callback(null, true);
+            callback(null, true, res);
         }
     });
 }
