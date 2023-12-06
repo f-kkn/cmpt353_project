@@ -5,6 +5,7 @@ import Landing from "./component/Landing";
 import Login from "./component/Login";
 import Signup from "./component/Signup";
 import Main from "./component/Main";
+import Channel from './component/Channels';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/Signup" element={<Signup />} />
           <Route path="/Main" element={<Main />} />
+          <Route path='/Channel/' element={<Channel />} />
         </Routes>
       </Router>
     </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import MACROS from "./macros";
 
@@ -6,6 +7,7 @@ import './Main.css';
 
 function Main(){
     const url = MACROS.URL;
+    const navigate = useNavigate();
     const [channelname, setChannelname] = useState("");
     const [channelList, setChannelList] = useState([]);
     const usrOBJ = JSON.parse(getCookie("user"));
@@ -56,18 +58,23 @@ function Main(){
         return "";
     }
 
+    function goToChannel(channel){
+        fetch(`${url}/changeCookie`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            credentials: "include",
+            body: JSON.stringify({
+                "value": channel.channelName,
+                "cid": channel.channel_id
+            })
+        })
+        .then((data) => data.json())
+        .then((data) => {console.log(data); navigate("/Channel");})
+    }
+
     useEffect(() => {
         getChannels();
-        if(channelList.length > 0){
-            channelList.forEach((channel) => {
-                document.getElementById("list-channels").innerHTML += `
-                    <div className="channels"> 
-                        <h3 onclick={alert('${channel.channelName}')}> ${channel.channelName} </h3>
-                    </div> <br/>
-                `;
-            });
-        }
-    }, [channelList.length != 0]);
+    }, []);
 
     return(
         <div className="Main-page">
@@ -80,7 +87,13 @@ function Main(){
                     onChange={(data) => {setChannelname(data.target.value)}}
                 /> <br/>
                 <button onClick={createChannel}> Create A Channel </button> <br/> <br/> 
-                <div className="channel-list" id="list-channels"> </div>
+                <div className="channel-list" id="list-channels">
+                    {channelList.map((channel) => (
+                        <div className="channels"> 
+                            <h3 key={channel.channel_id} onClick={() => {goToChannel(channel)}}> {channel.channelName} </h3>
+                        </div>
+                    ))} 
+                </div>
             </div>
         </div>
     )

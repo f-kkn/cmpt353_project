@@ -41,9 +41,13 @@ conn.connect((err) => {
     console.log("MySQL Connected");
 });
 
-/* --------------------- DATABASE ---------------------*/
+/* --------------------- OTHERS ---------------------*/
 
 initdb.init(conn, dbName, userTable, channelTable);
+
+function addCookie(respond, cookieName, obj){
+    respond.cookie(cookieName, obj, {secure: true, path: "/"});
+}
 
 /* --------------------- EXPRESS ---------------------*/
 app.post('/usersdb/add', (req, res) => {
@@ -66,7 +70,7 @@ app.post('/usersdb/auth', (req, res) => {
             console.log(`User ${req.body.username} does not exist.`);
             res.status(200).send(JSON.stringify("0"));
         } else{
-            res.cookie("user", result[0], {secure: true, path: "/"});
+            addCookie(res, "user", result[0]);
             res.status(200).send(JSON.stringify("1"));
         }
     });
@@ -88,6 +92,12 @@ app.post('/channeldb/show', (req, res) => {
             res.status(200).send(result);
         }
     });
+});
+
+app.post('/changeCookie', (req, res) => {
+    console.log("Changing cookie for channel");
+    addCookie(res, "channel_info", req.body, res);
+    res.status(200).send(JSON.stringify(req.body));
 });
 
 app.listen(port, host);
