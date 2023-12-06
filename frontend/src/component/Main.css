@@ -1,0 +1,33 @@
+/* Main.css */
+
+.Main-page {
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+  }
+  
+  .select-channels {
+    margin-top: 20px;
+    margin-left: 20px; /* Add margin to the left for offset */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .select-channels input {
+    padding: 8px;
+    margin-bottom: 10px;
+  }
+  
+  .channel-list {
+    margin-top: 20px;
+  }
+  
+  .channels {
+    background-color: #f2f2f2;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    text-align: left;
+  }
+
+  

@@ -11,7 +11,7 @@ function Signup(){
     const [Response, SetResponse] = useState("");
     
     function sendUsrCredits(){
-        fetch(`${url}/usersdb/addUser`, {
+        fetch(`${url}/usersdb/add`, {
             method: "POST", 
             headers: {"Content-Type": "application/json"},
             credentials: "include",

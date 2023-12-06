@@ -11,7 +11,7 @@ function Login(){
 
 
     function authenticateUser(){
-        fetch(`${url}/usersdb/authUser`, {
+        fetch(`${url}/usersdb/auth`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             credentials: "include",

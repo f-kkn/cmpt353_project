@@ -1,5 +1,6 @@
 const userdb = require("./api/usersdb");
 const channeldb = require("./api/channeldb");
+const initdb = require("./api/initdb");
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -41,50 +42,11 @@ conn.connect((err) => {
 });
 
 /* --------------------- DATABASE ---------------------*/
-let createDB = `CREATE DATABASE IF NOT EXISTS ${dbName}`;
-let getDatabase = `USE ${dbName}`;
-let addUsrTable = `CREATE TABLE IF NOT EXISTS ${userTable} (
-            user_id int unsigned NOT NULL auto_increment,
-            userName varchar(100) NOT NULL,
-            passWord varchar(100) NOT NULL,
-            name varchar(100) NOT NULL,
-            PRIMARY KEY (user_id))`;
-            
-let addChannelTable = `CREATE TABLE IF NOT EXISTS ${channelTable} (
-            channel_id int unsigned NOT NULL auto_increment,
-            channelName varchar(100) NOT NULL,
-            user_id int unsigned,
-            PRIMARY KEY (channel_id),
-            FOREIGN KEY (user_id) REFERENCES users (user_id))`;
-            
-conn.query(createDB, (err) => {
-    if(err){
-        throw `Server cannot create a database.`;
-    }
-    console.log(`[SERVER] : database \'${dbName}\' created.`);
-});
-conn.query(getDatabase, (err) => {
-    if(err){
-        throw `${err.message}`;
-    }
-    conn.query(addUsrTable, (err) => {
-        if(err){
-            throw `${err.message}`;
-        }
-        console.log(`[SERVER] : Table ${userTable}. created`);
-    });
-    conn.query(addChannelTable, (err) => {
-        if(err){
-            throw `${err.message}`;
-        }
-        console.log(`[SERVER] : Table ${channelTable}. created`);
-    });
-});
-console.log(`Database initialization complete!`);
 
+initdb.init(conn, dbName, userTable, channelTable);
 
 /* --------------------- EXPRESS ---------------------*/
-app.post('/usersdb/addUser', (req, res) => {
+app.post('/usersdb/add', (req, res) => {
     console.log('Adding user to database....');
     userdb.checkUser(conn, req.body.username, userTable, (err, exist) => {
         if(err || exist){
@@ -97,7 +59,7 @@ app.post('/usersdb/addUser', (req, res) => {
     });
 });
 
-app.post('/usersdb/authUser', (req, res) => {
+app.post('/usersdb/auth', (req, res) => {
     console.log('Authenticating user from database....');
     userdb.authUser(conn, req.body.username, req.body.password, (err, authenticate, result) => {
         if(err || !authenticate){
@@ -114,6 +76,18 @@ app.post('/channeldb/create', (req, res) => {
     console.log("Creating channel...");
     channeldb.create(conn, req.body.channelname, req.body.uid, channelTable);
     res.status(200).send(JSON.stringify("channel created."));
+});
+
+app.post('/channeldb/show', (req, res) => {
+    console.log(`Requesting to show all channels`);
+    channeldb.show(conn, req.body.uid, (err, empty, result) => {
+        if(err || empty){
+            console.log(`User does not have any channels involved`);
+            res.status(400).send(JSON.stringify("No channels."));
+        } else{
+            res.status(200).send(result);
+        }
+    });
 });
 
 app.listen(port, host);
