@@ -5,9 +5,11 @@ function Landing(){
     
     return(
         <div className="Landing-page">
-            <h1>My Stack Overflow: </h1> <br/> <br/>
+            <h1>My Stack Overflow </h1> <br/> <br/>
             <div className="Opening-message">
-                <h2> Testing </h2> <br/>
+                <h3> Welcome to my stack-overflow application. Post a  question so that 
+                    other people can help you out!
+                     </h3> <br/>
                 <Link to='/login'>
                     <button className="redirect-login"> Click to log in </button>
                 </Link>
