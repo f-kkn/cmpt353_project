@@ -1,6 +1,7 @@
 const userdb = require("./api/usersdb");
 const channeldb = require("./api/channeldb");
 const initdb = require("./api/initdb");
+const postdb = require('./api/postdb');
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -28,6 +29,7 @@ app.use('/', express.static(path.join(__dirname, 'public')));
 const dbName = "projectdb";
 const userTable = "users";
 const channelTable = "channels";
+const postTable = "posts";
 
 const conn = mysql.createConnection({
     host: "database",
@@ -43,7 +45,7 @@ conn.connect((err) => {
 
 /* --------------------- OTHERS ---------------------*/
 
-initdb.init(conn, dbName, userTable, channelTable);
+initdb.init(conn, dbName, userTable, channelTable, postTable);
 
 function addCookie(respond, cookieName, obj){
     respond.cookie(cookieName, obj, {secure: true, path: "/"});
@@ -78,7 +80,8 @@ app.post('/usersdb/auth', (req, res) => {
 
 app.post('/channeldb/create', (req, res) => {
     console.log("Creating channel...");
-    channeldb.create(conn, req.body.channelname, req.body.uid, channelTable);
+    console.log()
+    channeldb.create(conn, req.body.channelname, req.body.channeldata, req.body.uid, channelTable);
     res.status(200).send(JSON.stringify("channel created."));
 });
 
@@ -87,11 +90,17 @@ app.post('/channeldb/show', (req, res) => {
     channeldb.show(conn, req.body.uid, (err, empty, result) => {
         if(err || empty){
             console.log(`User does not have any channels involved`);
-            res.status(400).send(JSON.stringify("No channels."));
+            res.status(200).send([]);
         } else{
             res.status(200).send(result);
         }
     });
+});
+
+app.post('/postdb/create', (req, res) => {
+    console.log("Creating post...");
+    postdb.create(conn, postTable, req.body.postname, req.body.postdata, req.cookies.channel_info);
+    res.status(200).send(JSON.stringify("posts created."));
 });
 
 app.post('/changeCookie', (req, res) => {

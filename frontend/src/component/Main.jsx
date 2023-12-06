@@ -9,6 +9,7 @@ function Main(){
     const url = MACROS.URL;
     const navigate = useNavigate();
     const [channelname, setChannelname] = useState("");
+    const [channelData, setChannelData] = useState("");
     const [channelList, setChannelList] = useState([]);
     const usrOBJ = JSON.parse(getCookie("user"));
     
@@ -18,12 +19,13 @@ function Main(){
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
                 "channelname": channelname,
+                "channeldata": channelData,
                 "uid": usrOBJ.user_id
             })
         })
         .then((res) => res.json())
         .then((res) => {
-            alert(res);
+            
             setChannelname("");
         })
     }
@@ -64,7 +66,8 @@ function Main(){
             headers: {"Content-Type": "application/json"},
             credentials: "include",
             body: JSON.stringify({
-                "value": channel.channelName,
+                "name": channel.channelName,
+                "value": channel.channelData,
                 "cid": channel.channel_id
             })
         })
@@ -81,18 +84,30 @@ function Main(){
             <h1> Channel List </h1>
             <div className="select-channels" id="channel-block">
                 <input 
-                    type="type"
+                    type="text"
                     placeholder="Channel Name"
                     value={channelname}
                     onChange={(data) => {setChannelname(data.target.value)}}
                 /> <br/>
+                <input
+                    type="text"
+                    placeholder="Type data here"
+                    style={{ width: '300px', height: '40px' }}
+                    onChange={(data) => {setChannelData(data.target.value)}}
+                /> <br/>
                 <button onClick={createChannel}> Create A Channel </button> <br/> <br/> 
                 <div className="channel-list" id="list-channels">
-                    {channelList.map((channel) => (
-                        <div className="channels"> 
-                            <h3 key={channel.channel_id} onClick={() => {goToChannel(channel)}}> {channel.channelName} </h3>
-                        </div>
-                    ))} 
+                    {
+                    Array.isArray(channelList) ? (
+                        channelList.map((channel) => (
+                            <div key={channel.channel_id} className="channels">
+                            <h3 onClick={() => goToChannel(channel)}> {channel.channelName} </h3>
+                            </div>
+                        ))
+                      ) : (
+                        <p>No channels available.</p>
+                      )
+                    }
                 </div>
             </div>
         </div>

@@ -1,5 +1,5 @@
-exports.create = (conn, channelName, userID, table) => {
-    let addTable = `INSERT INTO ${table}(channelName, user_id) VALUES('${channelName}', ${userID})`;
+exports.create = (conn, channelName, channelData, userID, table) => {
+    let addTable = `INSERT INTO ${table}(channelName, channelData, user_id) VALUES('${channelName}', "${channelData}", ${userID})`;
     conn.query(addTable, (err) => {
         if(err) throw err;
         
